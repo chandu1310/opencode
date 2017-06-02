@@ -3,5 +3,6 @@
   <groupId>opencode</groupId>
   <artifactId>matrix</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>mmf</name>
+  <name>Mathematical Matrix Frameworl</name>
+  <description>Opensouce framework to handle scalar matrix data and operations in Java.</description>
 </project>
