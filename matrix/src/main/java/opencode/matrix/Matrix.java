@@ -20,16 +20,21 @@ public interface Matrix extends Serializable {
 	//IDENTITY OPERATIONS
 	public Matrix setName(String name);
 	public String getName();
-
+	public void initialize(Initializer function);
+	public boolean isEqualTo(Matrix m);
+	public boolean isReplaceableWith(Matrix m);
+	public boolean isZeroMatrix();
 	
 	//DATA INFO AND MANAGEMENT OPERATIONS
 	public int rows();
 	public int columns();
 	public double[] row(int rowNumber);
 	public double[] col(int colNumber);
+	public double[][] valuesAsArray();
 	public double valueAt(int rowNumber, int colNumber) throws ImpossibleOperationError;
 	public Matrix create(String name, int rows, int cols);
 	public Matrix load(double[][] values);
+	public Matrix load(Matrix m);
 	public Matrix copy(String name);
 	public Matrix copy();
 	
@@ -46,10 +51,12 @@ public interface Matrix extends Serializable {
 	//ARITHMETIC OPERATIONS
 	public Matrix add(Matrix toBeAddedMatrix);
 	public Matrix add(Matrix toBeAddedMatrix, String resultName);
-	public Matrix substract(Matrix toBeAddedMatrix);
-	public Matrix substract(Matrix toBeAddedMatrix, String resultName);
-	public Matrix multiply(Matrix toBeAddedMatrix);
-	public Matrix multiply(Matrix toBeAddedMatrix, String resultName);
+	public Matrix substract(Matrix toBeSubstractedMatrix);
+	public Matrix substract(Matrix toBeSubstractedMatrix, String resultName);
+	public Matrix multiply(Matrix toBeMultipliedMatrix);
+	public Matrix multiply(Matrix toBeMultipliedMatrix, String resultName);
+	public Matrix multiplyPositionally(Matrix toBeMultipliedMatrix);
+	public Matrix multiplyPositionally(Matrix toBeMultipliedMatrix, String resultName);
 	public Matrix print(OutputStream out);
 	public Matrix print();
 	

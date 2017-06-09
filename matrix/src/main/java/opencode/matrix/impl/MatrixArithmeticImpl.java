@@ -2,6 +2,7 @@ package opencode.matrix.impl;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.Arrays;
 
 import opencode.matrix.BaseImpl;
 import opencode.matrix.Matrix;
@@ -19,9 +20,6 @@ public class MatrixArithmeticImpl extends BaseImpl {
 
 	private static final long serialVersionUID = 4738069832997138283L;
 	
-	protected String _name;
-	
-	protected double[][] _data = null;
 	
 	public MatrixArithmeticImpl() {
 		this("M"+System.currentTimeMillis(), 1, 1);
@@ -30,60 +28,6 @@ public class MatrixArithmeticImpl extends BaseImpl {
 	public MatrixArithmeticImpl(String name, int rows, int cols){
 		this._name = name;
 		this._data = new double[rows][cols];
-	}
-		
-	final public String getName(){
-		return this._name;
-	}
-	
-	final public Matrix setName(String name){
-		this._name = name;
-		return this;
-	}
-	
-	final public int rows(){
-		return this._data.length;
-	}
-
-	final public int columns(){
-		return this._data[0].length;
-	}
-
-	//Accepts [1, n]
-	final public double[] row(int rowNumber){
-		if(rowNumber<1 || rowNumber > _data.length){
-			throw new ImpossibleOperationError(String.format(MessageTemplates.INVALID_ROW, rowNumber));
-		}
-		return this._data[rowNumber-1];
-	}
-
-	final public double[] col(int colNumber){
-		int colSize = row(1).length;
-		if(colNumber<1 || colNumber > colSize){
-			throw new ImpossibleOperationError(String.format(MessageTemplates.INVALID_COLUMN, colNumber));
-		}
-		
-		double[] colData = new double[this._data.length]; 
-		for(int i=0; i<_data.length; i++){
-			colData[i] = _data[i][colNumber-1];
-		}
-		return colData;
-	}
-
-	@Override
-	public double valueAt(int rowNumber, int colNumber) throws ImpossibleOperationError {
-		if(rowNumber < 0 || rowNumber >= _data.length || colNumber < 0 || colNumber >= _data[0].length){
-			throw new ImpossibleOperationError(String.format(MessageTemplates.INVALID_ROW_COLUMN, rowNumber, colNumber));
-		}
-		return this._data[rowNumber][colNumber];
-	}
-	
-	final public Matrix load(double[][] values){
-		if(_data.length!=values.length || _data[0].length!=values[0].length){
-			throw new ImpossibleOperationError(MessageTemplates.UNMATCHING_MATRIX_SIZE);
-		}
-		this._data = values;
-		return this;
 	}
 
 	//SCALAR OPERATIONS
@@ -202,36 +146,33 @@ public class MatrixArithmeticImpl extends BaseImpl {
 		throw new ImpossibleOperationError(MessageTemplates.UNMATCHING_MATRIX_SIZE);
 	}
 	
+	
+	final public Matrix multiplyPositionally(Matrix b){
+		return multiplyPositionally(b, String.format(MessageTemplates.PRODUCT_MATRIX_NAME, this._name, b.getName()));
+	}
+
+	@Override
+	public Matrix multiplyPositionally(Matrix b, String resultName) {
+		if(rows()==b.rows() && columns()==b.columns()){
+			Matrix productMatrix = b.create(resultName, this.rows(), this.columns());
+			MatrixArithmeticImpl product = (MatrixArithmeticImpl)productMatrix;
+			
+			for(int i=0; i<this.rows(); i++){
+				for(int j=0; j<this.columns(); j++){
+					product._data[i][j] = this._data[i][j] * b.valueAt(i, j);
+				}
+			}
+			
+			return product;
+		}
+		throw new ImpossibleOperationError(MessageTemplates.UNMATCHING_MATRIX_SIZE);
+	}	
+	
 	private double _aggregatedProduct(double[] a, double[] b){
-		double sum = 0.0f;
+		double sum = 0.0d;
 		for(int i=0; i<a.length; i++){
 			sum = sum + (a[i] * b[i]);
 		}
 		return sum;
-	}
-	
-	final public Matrix print(OutputStream out){
-		PrintStream ps;
-		if(!(out instanceof PrintStream)){
-			ps = new PrintStream(out);
-		}else{
-			ps = (PrintStream)out;
-		}
-		
-		ps.print("\n"+this._name+": \n");
-		for(int i=0; i<_data.length; i++){
-			for(int j=0; j<_data[i].length; j++){
-				ps.printf("%.16f ", _data[i][j]);
-			}
-			ps.print("\n");
-		}
-		ps.flush();
-		return this;
-	}
-	
-	@Override
-	final public Matrix print() {
-		print(System.out);
-		return this;
 	}
 }

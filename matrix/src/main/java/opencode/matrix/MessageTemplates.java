@@ -18,4 +18,5 @@ public class MessageTemplates {
 	public static final String ADDED_MATRIX_NAME = "(%s+%s)";
 	public static final String SUBSTRACTED_MATRIX_NAME = "(%s-%s)";
 	public static final String PRODUCT_MATRIX_NAME = "(%s*%s)";
+	public static final String POSITIONAL_PRODUCT_MATRIX_NAME = "(%s-*-%s)";
 }

@@ -27,7 +27,7 @@ public class MatrixOperationsImpl extends MatrixArithmeticImpl {
 				transposeData[j][i] = this._data[i][j];
 			}
 //		this._data = transposeData;
-		return Matrix2D.instance(this._name, transposeData);
+		return Matrix2D.instance("Trans("+this._name+")", transposeData);
 	}
 	
 	@Override
