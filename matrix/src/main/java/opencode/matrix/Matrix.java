@@ -35,6 +35,8 @@ public interface Matrix extends Serializable {
 	public Matrix create(String name, int rows, int cols);
 	public Matrix load(double[][] values);
 	public Matrix load(Matrix m);
+	public Matrix replace(double[][] values);
+	public Matrix replace(Matrix m);
 	public Matrix copy(String name);
 	public Matrix copy();
 	
@@ -67,4 +69,6 @@ public interface Matrix extends Serializable {
 	public Matrix slice(int startRow, int startColumn, int lastRow, int lastColumn, String resultName) throws ImpossibleOperationError;
 	public Matrix merge(Matrix b, boolean isHorizontal) throws ImpossibleOperationError;
 	public Matrix merge(Matrix b, boolean isHorizontal, String resultName) throws ImpossibleOperationError;
+	public Matrix combineIntoRowMatrix(Combiner function);
+	public Matrix combineIntoColumnMatrix(Combiner function);
 }

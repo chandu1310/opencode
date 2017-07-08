@@ -1,5 +1,6 @@
 package opencode.matrix.impl;
 
+import opencode.matrix.Combiner;
 import opencode.matrix.Matrix;
 import opencode.matrix.MatrixFactory;
 import opencode.matrix.MessageTemplates;
@@ -96,5 +97,31 @@ public class MatrixOperationsImpl extends MatrixArithmeticImpl {
 			}
 
 		return this.create(resultName, mergedData.length, mergedData.length==0?0:mergedData[0].length).load(mergedData);
+	}
+	
+	@Override
+	public Matrix combineIntoRowMatrix(Combiner function) {
+		double[][] d = new double[1][this.columns()];
+		
+		for(int i=1; i<=this.columns(); i++){
+			d[0][i-1] = function.apply(this.col(i));
+		}
+		
+		this._data = d;
+		setName(getName()+":CombinedAsRow");
+		return this;
+	}
+	
+	@Override
+	public Matrix combineIntoColumnMatrix(Combiner function) {
+		double[][] d = new double[this.rows()][1];
+		
+		for(int i=1; i<=this.rows(); i++){
+			d[i-1][0] = function.apply(this.row(i));
+		}
+		
+		this._data = d;
+		setName(getName()+":CombinedAsColumn");
+		return this;
 	}
 }

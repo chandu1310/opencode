@@ -1,11 +1,17 @@
 package opencode.mla.data;
 
 public abstract class MLDataSourceEntryProcessor {
-	final public Object _processRow(long rowNumber, String rowData, MLDataSourceConfig dataSourceConfig){
-		MLDataSourceEntry entry = null;
+	final public Object _processRow(long rowNumber, String rowData, MLDataSourceConfig dataSourceConfig, boolean asHeader){
+		
 		String[] dataRow = processRow(rowNumber, rowData, dataSourceConfig);
-		entry = new MLDataSourceEntry(rowNumber, dataRow);
-		return entry;
+		
+		if(asHeader){
+			MLDataSourceHeader header = new MLDataSourceHeader();
+			header.setHeaders(dataRow);
+			header.setHeaderCount(dataRow.length);
+			return header;
+		}else
+			return new MLDataSourceEntry(rowNumber, dataRow);
 	}
 	
 	abstract public String[] processRow(long rowNumber, String rowData, MLDataSourceConfig dataSourceConfig); 

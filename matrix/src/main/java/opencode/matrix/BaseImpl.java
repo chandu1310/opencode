@@ -101,7 +101,24 @@ public class BaseImpl implements Matrix {
 		this._data = values;
 		return this;
 	}	
+
+	final public Matrix replace(double[][] values){
+		if(values==null || values.length==0){
+			throw new ImpossibleOperationError(String.format(MessageTemplates.UNACCEPTABLE_MATRIX_SIZE, 0, 0));
+		}
+		this._data = values;
+		return this;
+	}	
 	
+	final public Matrix replace(Matrix m){
+		if(m==null || m.rows()==0 || m.columns()==0){
+			throw new ImpossibleOperationError(String.format(MessageTemplates.UNACCEPTABLE_MATRIX_SIZE, 0, 0));
+		}
+		
+		this._data = m.valuesAsArray();
+		return this;
+	}	
+
 	public Matrix load(Matrix m) {
 		this.load(Helper.createCopy(m.valuesAsArray()));
 		return null;
@@ -269,4 +286,15 @@ public class BaseImpl implements Matrix {
 		return null;
 	}
 
+	@Override
+	public Matrix combineIntoColumnMatrix(Combiner function) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public Matrix combineIntoRowMatrix(Combiner function) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

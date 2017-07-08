@@ -21,6 +21,14 @@ public final class ActivationFunction implements Serializable{
 		this._differential = _differential;
 	}
 	
+	public Transformer get(){
+		return _function;
+	}
+	
+	public Transformer getDifferential(){
+		return _differential;
+	}
+	
 	public void apply(Matrix a){
 		a.transform(_function);
 	}
@@ -54,8 +62,9 @@ public final class ActivationFunction implements Serializable{
 	final public static ActivationFunction SIGMOID = new ActivationFunction(
 			"Sigmoid Function",
 			(x) -> {
+				  return 1.0 / (1 + Math.exp(-1.0 * x));
 				// 1 / (1+(e^(-1*x)))
-				return Math.pow(1+Math.exp(-1*x), -1);
+//				return Math.pow(1+Math.exp(-1*x), -1);
 			},
 			(x) -> {
 				// f(x)(1-f(x)) = e^x / (1+e^x)^2

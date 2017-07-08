@@ -14,7 +14,14 @@ public final class MLDataSourceConfig {
 	private String substitutionForMissingDataEnabled = "";
 
 	// Header Row Processor
-	private MLDataSourceEntryProcessor headerProcessor;
+	private MLDataSourceEntryProcessor headerProcessor = new MLDataSourceEntryProcessor() {
+		private Splitter rowDataSplitter = Splitter.on(',').trimResults();
+
+		@Override
+		public String[] processRow(long rowNumber, String rowData, MLDataSourceConfig dataSourceConfig) {	
+			return Iterables.toArray(rowDataSplitter.split(rowData), String.class);
+		}
+	};
 
 	// Data Row Processor
 	private MLDataSourceEntryProcessor entryProcessor = new MLDataSourceEntryProcessor() {

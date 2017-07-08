@@ -43,7 +43,7 @@ public final class CSVFileBasedMLDataSource implements MLDataSource {
 			if(this.fileReader!=null && this.dataSourceConfig.isReadingHeadersEnabled() && this.dataSourceConfig.getHeaderProcessor()!=null){
 				logger.log(Level.FINE, "Reading header information.");
 				String headerRowData = this.fileReader.readLine();
-				Object headerInfoObj = this.dataSourceConfig.getHeaderProcessor().processRow(0, headerRowData, this.dataSourceConfig);
+				Object headerInfoObj = this.dataSourceConfig.getHeaderProcessor()._processRow(0, headerRowData, this.dataSourceConfig, true);
 				if(headerInfoObj != null && headerInfoObj instanceof MLDataSourceHeader){
 					this.header = (MLDataSourceHeader)headerInfoObj;
 				}else{
@@ -116,7 +116,7 @@ public final class CSVFileBasedMLDataSource implements MLDataSource {
 				if(rowData == null){
 					row = null;  // Reached end of the file.
 				}else if(StringUtils.isNotBlank(rowData)) {
-					Object rowObj = this.dataSourceConfig.getEntryProcessor()._processRow(this.readCount, rowData, dataSourceConfig);
+					Object rowObj = this.dataSourceConfig.getEntryProcessor()._processRow(this.readCount, rowData, dataSourceConfig, false);
 					if(rowObj != null && rowObj instanceof MLDataSourceEntry){
 						row = ((MLDataSourceEntry)rowObj).getData();
 						this.readCount++;

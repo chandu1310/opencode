@@ -3,4 +3,11 @@
   <groupId>demo</groupId>
   <artifactId>sample-application</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <dependencies>
+  	<dependency>
+  		<groupId>opencode</groupId>
+  		<artifactId>medhas</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
+  </dependencies>
 </project>

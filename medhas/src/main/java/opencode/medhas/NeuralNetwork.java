@@ -21,9 +21,13 @@ public class NeuralNetwork {
 	}
 
 	public NeuralNetwork connectLayer(NeuralLayer layer){
+		return connectLayer(layer, null);
+	}
+	
+	public NeuralNetwork connectLayer(NeuralLayer layer, double[][] initialWeights){
 		this.layers.add(layer);
 		if(this.layers.size()>1){
-			this.layers.get(this.layers.size()-2).connectTo(layer);
+			this.layers.get(this.layers.size()-2).connectTo(layer, initialWeights);
 		}
 		return this;
 	}
@@ -70,7 +74,7 @@ public class NeuralNetwork {
 		Matrix requiredOutput = Matrix2D.instance("RequiredOutput", new double[][]{output});
 		Matrix calculatedValue = layers.get(layers.size()-1).getValues();
 		Matrix error = requiredOutput.substract(calculatedValue, "Error");
-		Matrix delta = error.multiply(2*leariningRate).multiplyPositionally(layers.get(layers.size()-1).getBacktrackingDifferentialFactor(), "Delta");
+		Matrix delta = error.multiply(leariningRate).multiplyPositionally(layers.get(layers.size()-1).getBacktrackingDifferentialFactor(), "Delta");
 		
 		requiredOutput.print();
 		calculatedValue.print();

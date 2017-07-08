@@ -1,14 +1,10 @@
 package opencode.matrix.impl;
 
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.util.Arrays;
-
 import opencode.matrix.BaseImpl;
 import opencode.matrix.Matrix;
+import opencode.matrix.MatrixConstants.Operation;
 import opencode.matrix.MatrixFactory;
 import opencode.matrix.MessageTemplates;
-import opencode.matrix.MatrixConstants.Operation;
 import opencode.matrix.exceptions.ImpossibleOperationError;
 
 /**
@@ -32,41 +28,37 @@ public class MatrixArithmeticImpl extends BaseImpl {
 
 	//SCALAR OPERATIONS
 	final public Matrix add(double value){
-		return _evaluateScalarOperation(this, Operation.SUM, value, this).setName(String.format(MessageTemplates.SCALAR_ADDED_MATRIX_NAME, this._name, value));
+		return add(value, String.format(MessageTemplates.SCALAR_ADDED_MATRIX_NAME, this._name, value));
 	}
 	final public Matrix add(double value, String resultName){
-		Matrix resultMatrix = create(resultName, rows(), columns());
-		return _evaluateScalarOperation(this, Operation.SUM, value, resultMatrix);
+		return _evaluateScalarOperation(this, Operation.SUM, value, this).setName(resultName);
 	}
 
 	final public Matrix substract(double value){
-		return _evaluateScalarOperation(this, Operation.MINUS, value, this).setName(String.format(MessageTemplates.SCALAR_SUBSTRACTED_MATRIX_NAME, this._name, value));
+		return substract(value, String.format(MessageTemplates.SCALAR_SUBSTRACTED_MATRIX_NAME, this._name, value));
 	}
 	final public Matrix substract(double value, String resultName){
-		Matrix resultMatrix = create(resultName, rows(), columns());
-		return _evaluateScalarOperation(this, Operation.MINUS, value, resultMatrix);
+		return _evaluateScalarOperation(this, Operation.MINUS, value, this).setName(resultName);
 	}
 
 	final public Matrix multiply(double value){
-		return _evaluateScalarOperation(this, Operation.PRODUCT, value, this).setName(String.format(MessageTemplates.SCALAR_PRODUCT_MATRIX_NAME, this._name, value));
+		return multiply(value, String.format(MessageTemplates.SCALAR_PRODUCT_MATRIX_NAME, this._name, value));
 	}
 	final public Matrix multiply(double value, String resultName){
-		Matrix resultMatrix = create(resultName, rows(), columns());
-		return _evaluateScalarOperation(this, Operation.PRODUCT, value, resultMatrix);
+		return _evaluateScalarOperation(this, Operation.PRODUCT, value, this).setName(resultName);
 	}
 
 	final public Matrix divide(double value){
 		if(value==0){
 			throw new ImpossibleOperationError(MessageTemplates.INVALID_DIVISOR_FOROPERATION);
 		}
-		return _evaluateScalarOperation(this, Operation.DIVISION, value, this).setName(String.format(MessageTemplates.SCALAR_DIVISION_MATRIX_NAME, this._name, value));
+		return divide(value, String.format(MessageTemplates.SCALAR_DIVISION_MATRIX_NAME, this._name, value));
 	}
 	final public Matrix divide(double value, String resultName){
 		if(value==0){
 			throw new ImpossibleOperationError(MessageTemplates.INVALID_DIVISOR_FOROPERATION);
 		}
-		Matrix resultMatrix = create(resultName, rows(), columns());
-		return _evaluateScalarOperation(this, Operation.DIVISION, value, resultMatrix);
+		return _evaluateScalarOperation(this, Operation.DIVISION, value, this).setName(resultName);
 	}
 
 	private Matrix _evaluateScalarOperation(Matrix a, Operation op, double scalar, Matrix result){
@@ -99,8 +91,7 @@ public class MatrixArithmeticImpl extends BaseImpl {
 	}
 	final public Matrix add(Matrix b, String resultName){
 		if(rows()==b.rows() && columns()==b.columns()){
-			Matrix value = create(resultName, rows(), columns());
-			return _evaluateSumOrSub((MatrixArithmeticImpl)b, 1, value);
+			return _evaluateSumOrSub((MatrixArithmeticImpl)b, 1, this).setName(resultName);
 		}
 		throw new ImpossibleOperationError(MessageTemplates.UNMATCHING_MATRIX_SIZE);
 	}
@@ -110,8 +101,7 @@ public class MatrixArithmeticImpl extends BaseImpl {
 	}
 	final public Matrix substract(Matrix b, String resultName){
 		if(rows()==b.rows() && columns()==b.columns()){
-			Matrix value = create(resultName, rows(), columns());
-			return _evaluateSumOrSub((MatrixArithmeticImpl)b, -1, value);
+			return _evaluateSumOrSub((MatrixArithmeticImpl)b, -1, this).setName(resultName);
 		}
 		throw new ImpossibleOperationError(MessageTemplates.UNMATCHING_MATRIX_SIZE);
 	}
@@ -131,17 +121,18 @@ public class MatrixArithmeticImpl extends BaseImpl {
 	}
 	final public Matrix multiply(Matrix b, String resultName){
 		if(columns()==b.rows()){
-			Matrix productMatrix = b.create(resultName, this.rows(), b.columns());
-			MatrixArithmeticImpl product = (MatrixArithmeticImpl)productMatrix;
+			double[][] product = new double[this.rows()][b.columns()];
 			
 			for(int i=0; i<this.rows(); i++){
-				double[] rowData = this.row(i+1);
 				for(int j=0; j<b.columns(); j++){
-					double[] colData = b.col(j+1);
-					product._data[i][j] = _aggregatedProduct(rowData, colData);
+					double sum = 0;
+					for(int k=0; k<b.rows(); k++){
+						sum += this.valueAt(i,k) * b.valueAt(k, j);
+					}
+					product[i][j] = sum; 
 				}
 			}
-			return product;
+			return this.replace(product).setName(resultName);
 		}
 		throw new ImpossibleOperationError(MessageTemplates.UNMATCHING_MATRIX_SIZE);
 	}
@@ -150,29 +141,18 @@ public class MatrixArithmeticImpl extends BaseImpl {
 	final public Matrix multiplyPositionally(Matrix b){
 		return multiplyPositionally(b, String.format(MessageTemplates.PRODUCT_MATRIX_NAME, this._name, b.getName()));
 	}
-
+	
 	@Override
 	public Matrix multiplyPositionally(Matrix b, String resultName) {
 		if(rows()==b.rows() && columns()==b.columns()){
-			Matrix productMatrix = b.create(resultName, this.rows(), this.columns());
-			MatrixArithmeticImpl product = (MatrixArithmeticImpl)productMatrix;
-			
 			for(int i=0; i<this.rows(); i++){
 				for(int j=0; j<this.columns(); j++){
-					product._data[i][j] = this._data[i][j] * b.valueAt(i, j);
+					this._data[i][j] = this._data[i][j] * b.valueAt(i, j);
 				}
-			}
+			}		
 			
-			return product;
+			return setName(resultName);
 		}
 		throw new ImpossibleOperationError(MessageTemplates.UNMATCHING_MATRIX_SIZE);
 	}	
-	
-	private double _aggregatedProduct(double[] a, double[] b){
-		double sum = 0.0d;
-		for(int i=0; i<a.length; i++){
-			sum = sum + (a[i] * b[i]);
-		}
-		return sum;
-	}
 }
